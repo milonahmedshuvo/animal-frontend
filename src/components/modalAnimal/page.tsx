@@ -11,15 +11,25 @@ type Inputs = {
     image: string
     category: string
 }
+type TCategory = {
+    _id: string 
+    name: string,
+   }
+
+   type ApiResponse<T> = {
+    success: boolean;
+    message: string
+    data: T;
+  };
 
 
 export default function ModalAnimal() {
     const [showModal, setShowModal] = useState(false);
     const { register, handleSubmit, reset } = useForm<Inputs>()
 
-    const [categorys, setCategory] = useState(null);
+    const [categorys, setCategory] = useState<TCategory[] | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+   
   
   
   
@@ -30,10 +40,10 @@ export default function ModalAnimal() {
         try {
           const res = await fetch('http://localhost:5000/api/v1/category/all');
   
-          const data = await res.json();
-          setCategory(data);
+          const data:ApiResponse<TCategory[]> = await res.json();
+          setCategory(data.data);
         } catch (err) {
-          setError(err.message);
+          console.log(err)
         } finally {
           setLoading(false);
         }
@@ -185,7 +195,7 @@ export default function ModalAnimal() {
                                         -- Select an Category --
                                     </option>
                                     {
-                                        categorys?.data.map((category:{name:string, _id: string}) => <option key={category._id} value={category.name}>{category.name}</option> )
+                                        categorys?.map((category:{name:string, _id: string}) => <option key={category._id} value={category.name}>{category.name}</option> )
                                     }
 
                                 </select>
