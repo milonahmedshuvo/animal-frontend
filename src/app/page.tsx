@@ -5,6 +5,10 @@ import ModalCategory from "@/components/modalCategory/page";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+type TCategory = {
+  _id: string 
+  name: string,
+ }
 
 type TAnimal = {
   _id: string,
@@ -13,17 +17,22 @@ type TAnimal = {
   category: string
 }
 
+type ApiResponse<T> = {
+  success: boolean;
+  message: string
+  data: T;
+};
 
 
 const Home = () => {
-  const [categorys, setCategory] = useState(null);
+  const [categorys, setCategory] = useState<TCategory[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  
 
 
-  const [animals, setAnimal] = useState(null);
+  const [animals, setAnimal] = useState<TAnimal[] | null >(null);
   const [animalLoading, setAnimalLoading] = useState(true);
-  const [animalError, setAnimalError] = useState(null);
+
 
 
   useEffect(() => {
@@ -32,10 +41,10 @@ const Home = () => {
       try {
         const res = await fetch('http://localhost:5000/api/v1/category/all');
 
-        const data = await res.json();
-        setCategory(data);
+        const data: ApiResponse<TCategory[]> = await res.json();
+        setCategory(data?.data);
       } catch (err) {
-        setError(err.message);
+        console.log(err)
       } finally {
         setLoading(false);
       }
@@ -53,10 +62,10 @@ const Home = () => {
       try {
         const res = await fetch('http://localhost:5000/api/v1/animal/all');
 
-        const data = await res.json();
-        setAnimal(data);
+        const data:ApiResponse<TAnimal[]> = await res.json();
+        setAnimal(data?.data);
       } catch (err) {
-        setAnimalError(err.message);
+        console.log(err)
       } finally {
         setAnimalLoading(false);
       }
@@ -68,7 +77,7 @@ const Home = () => {
 
 
 
-console.log('animals', animals?.data)
+console.log('animals', animals)
 
 
 
@@ -89,9 +98,9 @@ console.log('animals', animals?.data)
           const res = await fetch(`http://localhost:5000/api/v1/animal/all?category=${category}`);
   
           const data = await res.json();
-          setAnimal(data);
+          setAnimal(data?.data);
         } catch (err) {
-          setAnimalError(err.message);
+         console.log(err)
         } finally {
           setAnimalLoading(false);
         }
@@ -111,7 +120,7 @@ console.log('animals', animals?.data)
 
         <div className="flex gap-4 ">
           {
-            categorys?.data?.map((category: { name: string, _id: string }, ) => <div key={category._id} >
+            categorys?.map((category: { name: string, _id: string }, ) => <div key={category._id} >
 
               <button onClick={()=> handleCategory(category.name)} className="bg-black border border-green-400  text-md text-white px-6 py-2 rounded-3xl transition " >
                 {category.name}
@@ -138,7 +147,7 @@ console.log('animals', animals?.data)
        <div className="mt-20 flex gap-6 pb-10 ">
 
            {
-             animals?.data?.map((animal:TAnimal) => <div key={animal._id} >
+             animals?.map((animal:TAnimal) => <div key={animal._id} >
                     
                      <div className="w-[160px] h-[191px] rounded-md border border-[#141414] flex justify-center items-center bg-[#050505]">
                      <Image
