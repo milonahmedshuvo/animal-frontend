@@ -17,7 +17,7 @@ export default function ModalCategory() {
 
     const onSubmit: SubmitHandler<Inputs> =async (data) => {
         console.log(data)
-        const res = await fetch('http://localhost:5000/api/v1/category/create', {
+        const res = await fetch('https://animal-backend-liart.vercel.app/api/v1/category/create', {
             method: "POST",
             headers: {
                 'Content-type': 'application/json'

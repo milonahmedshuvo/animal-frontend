@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 
@@ -30,15 +31,17 @@ export default function ModalAnimal() {
     const [categorys, setCategory] = useState<TCategory[] | null>(null);
     const [loading, setLoading] = useState(true);
    
+    
   
   
   
   
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
   
       const fetchCategoryData = async () => {
         try {
-          const res = await fetch('http://localhost:5000/api/v1/category/all');
+          const res = await fetch('https://animal-backend-liart.vercel.app/api/v1/category/all');
   
           const data:ApiResponse<TCategory[]> = await res.json();
           setCategory(data.data);
@@ -81,7 +84,7 @@ export default function ModalAnimal() {
            }
 
 
-           const res = await fetch('http://localhost:5000/api/v1/animal/create', {
+           const res = await fetch('https://animal-backend-liart.vercel.app/api/v1/animal/create', {
             method: "POST",
             headers: {
                 'Content-type': 'application/json'

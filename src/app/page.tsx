@@ -26,20 +26,26 @@ type ApiResponse<T> = {
 
 const Home = () => {
   const [categorys, setCategory] = useState<TCategory[] | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(true);
   
 
 
   const [animals, setAnimal] = useState<TAnimal[] | null >(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [animalLoading, setAnimalLoading] = useState(true);
 
+  
 
 
+  
+
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
-
     const fetchCategoryData = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/v1/category/all');
+        const res = await fetch('https://animal-backend-liart.vercel.app/api/v1/category/all');
 
         const data: ApiResponse<TCategory[]> = await res.json();
         setCategory(data?.data);
@@ -51,16 +57,18 @@ const Home = () => {
     };
 
     fetchCategoryData();
+
   }, []);
 
 
 
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
 
     const fetchCategoryData = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/v1/animal/all');
+        const res = await fetch('https://animal-backend-liart.vercel.app/api/v1/animal/all');
 
         const data:ApiResponse<TAnimal[]> = await res.json();
         setAnimal(data?.data);
@@ -80,7 +88,7 @@ const Home = () => {
 console.log('animals', animals)
 
 
-
+  
 
 
 
@@ -95,7 +103,7 @@ console.log('animals', animals)
 
       const fetchCategoryData = async () => {
         try {
-          const res = await fetch(`http://localhost:5000/api/v1/animal/all?category=${category}`);
+          const res = await fetch(`https://animal-backend-liart.vercel.app/api/v1/animal/all?category=${category}`);
   
           const data = await res.json();
           setAnimal(data?.data);
@@ -122,7 +130,7 @@ console.log('animals', animals)
           {
             categorys?.map((category: { name: string, _id: string }, ) => <div key={category._id} >
 
-              <button onClick={()=> handleCategory(category.name)} className="bg-black border border-green-400  text-md text-white px-6 py-2 rounded-3xl transition " >
+              <button onClick={()=> handleCategory(category.name)} className="bg-black  border border-[#EF0D0D]  text-md text-[#EF0D0D] px-6 py-2 rounded-3xl transition focus:text-[#058F34] focus:border-[#058F34]"  >
                 {category.name}
               </button>
 
