@@ -1,8 +1,10 @@
 'use client'
 
 
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form"
+import toast from "react-hot-toast";
 
 type Inputs = {
     name: string
@@ -13,18 +15,110 @@ type Inputs = {
 
 export default function ModalAnimal() {
     const [showModal, setShowModal] = useState(false);
-    const { register, handleSubmit } = useForm<Inputs>()
+    const { register, handleSubmit, reset } = useForm<Inputs>()
+
+    const [categorys, setCategory] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+  
+  
+  
+  
+    useEffect(() => {
+  
+      const fetchCategoryData = async () => {
+        try {
+          const res = await fetch('http://localhost:5000/api/v1/category/all');
+  
+          const data = await res.json();
+          setCategory(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchCategoryData();
+    }, []);
+  
 
 
-    const onSubmit: SubmitHandler<Inputs> = (data) => {
+
+    // start add animal 
+
+    const onSubmit: SubmitHandler<Inputs> = async (data) => {
         console.log(data)
+
+
+        const formData = new FormData();
+        formData.append('image', data.image[0]);
+
+
+    try{
+        const response = await axios.post('https://api.imgbb.com/1/upload?&key=1e1cb35e45fc37d4bfe6bd8a3ed195cc', formData, {
+            params: { key: '1e1cb35e45fc37d4bfe6bd8a3ed195cc'},
+            headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+        })
+
+         
+         const animalData = {
+            name: data.name,
+            image: response.data.data.url,
+            category: data.category  
+           }
+
+
+           const res = await fetch('http://localhost:5000/api/v1/animal/create', {
+            method: "POST",
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(animalData)
+           })
+
+           const animal = await res.json()
+
+
+        //    console.log('animal response', animal)
+           if(animal.success){
+            toast.success('animal create succesfully!')
+           }
+
+
+
+
+
+
+
+        // console.log("image upload success:", response.data.data.url)
+        
+       
+        reset()
+    } catch(err){
+        console.log("error uploading image", err)
     }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     return (
         <div className="flex justify-center ">
-            {/* Button to trigger modal */}
+            
             <button
                 className="bg-black border  text-md text-white px-6 py-2 rounded-3xl transition "
                 onClick={() => setShowModal(true)}
@@ -39,7 +133,7 @@ export default function ModalAnimal() {
             {showModal ? (
                 <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-                        {/* Modal header */}
+                        
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-semibold">Add Animal</h2>
                             <button
@@ -54,7 +148,7 @@ export default function ModalAnimal() {
 
 
 
-                        {/* Modal body with text inputs */}
+                       
                         <div>
 
                             <form onSubmit={handleSubmit(onSubmit)}>
@@ -90,9 +184,10 @@ export default function ModalAnimal() {
                                     <option value="" disabled>
                                         -- Select an Category --
                                     </option>
-                                    <option value="option1">Option 1</option>
-                                    <option value="option2">Option 2</option>
-                                    <option value="option3">Option 3</option>
+                                    {
+                                        categorys?.data.map((category:{name:string, _id: string}) => <option key={category._id} value={category.name}>{category.name}</option> )
+                                    }
+
                                 </select>
 
 
